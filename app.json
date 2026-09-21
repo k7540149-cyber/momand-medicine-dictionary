@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "MOMAND Medicine Dictionary",
+    "slug": "momand-medicine-dictionary",
+    "version": "6.0.0",
+    "orientation": "portrait",
+    "icon": "./icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0B6E4F"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./icon.png",
+        "backgroundColor": "#0B6E4F"
+      },
+      "package": "com.momand.medicinedictionary",
+      "versionCode": 1
+    },
+    "web": {
+      "favicon": "./icon.png"
+    }
+  }
+}
