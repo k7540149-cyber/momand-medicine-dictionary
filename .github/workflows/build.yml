@@ -27,6 +27,24 @@ jobs:
         run: npm install -g eas-cli
 
       - name: Build APK
-        run: eas build --platform android --profile preview --non-interactive
+        run: eas build --platform android --profile preview --non-interactive --wait
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Download APK
+        run: |
+          eas build:list --platform android --limit 1 --json --non-interactive > build.json
+          cat build.json
+          APK_URL=$(cat build.json | grep -o '"artifactUrl":"[^"]*"' | head -1 | cut -d'"' -f4)
+          if [ -n "$APK_URL" ]; then
+            curl -L -o app-release.apk "$APK_URL"
+          fi
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: app-release.apk
+          if-no-files-found: warn
