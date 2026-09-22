@@ -94,7 +94,7 @@ const medicines = uniqueMedicines;
 }
 
 // ==================== وروستی پاک لیست ====================
-const medicines = uniqueMedicines;
+
 
 // ==================== رنګونه ====================
 const COLORS = {
