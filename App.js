@@ -14,13 +14,83 @@ import {
   Animated,
 } from 'react-native';
 
-// ==================== د درملو درې فایلونه ====================
+// ==================== د درملو ټول فایلونه ====================
 import { medicines1 } from './medicines1';
 import { medicines2 } from './medicines2';
 import { medicines3 } from './medicines3';
+import { medicines4 } from './medicines4';
+import { medicines5 } from './medicines5';
+import { medicines6 } from './medicines6';
+import { medicines7 } from './medicines7';
+import { medicines8 } from './medicines8';
+import { medicines9 } from './medicines9';
+import { medicines10 } from './medicines10';
+import { medicines11 } from './medicines11';
+import { medicines12 } from './medicines12';
+import { medicines13 } from './medicines13';
+import { medicines14 } from './medicines14';
+import { medicines15 } from './medicines15';
+import { medicines16 } from './medicines16';
+import { medicines17 } from './medicines17';
+import { medicines18 } from './medicines18';
+import { medicines19 } from './medicines19';
 
-// ==================== ټول درمل یوځای ====================
-const medicines = [...medicines1, ...medicines2, ...medicines3];
+// ==================== ټول درمل یوځای کول ====================
+const allMedicines = [
+  ...medicines1,
+  ...medicines2,
+  ...medicines3,
+  ...medicines4,
+  ...medicines5,
+  ...medicines6,
+  ...medicines7,
+  ...medicines8,
+  ...medicines9,
+  ...medicines10,
+  ...medicines11,
+  ...medicines12,
+  ...medicines13,
+  ...medicines14,
+  ...medicines15,
+  ...medicines16,
+  ...medicines17,
+  ...medicines18,
+  ...medicines19,
+];
+
+// ==================== د Duplicate درملو مخنیوی ====================
+const normalizeMedicineName = (value) => {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, ' ');
+};
+
+const uniqueMedicines = [];
+const seenMedicines = new Set();
+
+for (const medicine of allMedicines) {
+  const medicineName = normalizeMedicineName(medicine.name);
+
+  // بې نومه ریکارډ مه حذفوه
+  if (!medicineName) {
+    uniqueMedicines.push(medicine);
+    continue;
+  }
+
+  // که نوم مخکې موجود وي، دا Duplicate دی
+  if (seenMedicines.has(medicineName)) {
+    continue;
+  }
+
+  seenMedicines.add(medicineName);
+  uniqueMedicines.push(medicine);
+}
+
+const medicines = uniqueMedicines;
+
+// ==================== وروستی پاک لیست ====================
+const medicines = uniqueMedicines;
 
 // ==================== رنګونه ====================
 const COLORS = {
@@ -81,7 +151,6 @@ export default function App() {
   const [showWelcome, setShowWelcome] = useState(true);
   const fadeAnim = useState(new Animated.Value(0))[0];
 
-  // ==================== د ښه راغلاست پیغام — ۱۰ ثانیې ====================
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
@@ -102,7 +171,6 @@ export default function App() {
     return () => clearTimeout(timer);
   }, []);
 
-  // ==================== د موبایل Back تڼۍ ====================
   useEffect(() => {
     const backAction = () => {
       if (selected) { setSelected(null); return true; }
