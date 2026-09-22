@@ -35,6 +35,9 @@ import { medicines17 } from './medicines17';
 import { medicines18 } from './medicines18';
 import { medicines19 } from './medicines19';
 
+// ==================== د حامله ښځو خطرناک درمل ====================
+import { pregnancyWarnings } from './pregnancy_warnings';
+
 // ==================== ټول درمل یوځای کول ====================
 const allMedicines = [
   ...medicines1,
@@ -58,7 +61,7 @@ const allMedicines = [
   ...medicines19,
 ];
 
-// ==================== د Duplicate درملو مخنیوی ====================
+// =// ==================== د Duplicate درملو مخنیوی ====================
 const normalizeMedicineName = (value) => {
   return String(value || '')
     .trim()
@@ -88,6 +91,7 @@ for (const medicine of allMedicines) {
 }
 
 const medicines = uniqueMedicines;
+}
 
 // ==================== وروستی پاک لیست ====================
 const medicines = uniqueMedicines;
@@ -109,6 +113,7 @@ const COLORS = {
   text: '#1B2A41',
   textLight: '#6B7C8F',
   border: '#E1E8ED',
+  pregnancy: '#8E44AD',
 };
 
 // ==================== خطرناک ترکیبونه ====================
@@ -148,6 +153,7 @@ export default function App() {
   const [selected, setSelected] = useState(null);
   const [symptom, setSymptom] = useState('');
   const [interactionSearch, setInteractionSearch] = useState('');
+  const [pregnancySearch, setPregnancySearch] = useState('');
   const [showWelcome, setShowWelcome] = useState(true);
   const fadeAnim = useState(new Animated.Value(0))[0];
 
@@ -201,6 +207,12 @@ export default function App() {
         i.med1.toLowerCase().includes(interactionSearch.toLowerCase()) ||
         i.med2.toLowerCase().includes(interactionSearch.toLowerCase()))
     : interactions;
+
+  const pregnancyResults = pregnancySearch.trim()
+    ? pregnancyWarnings.filter((p) =>
+        p.name.toLowerCase().includes(pregnancySearch.toLowerCase()) ||
+        p.effect.toLowerCase().includes(pregnancySearch.toLowerCase()))
+    : pregnancyWarnings;
 
   // ==================== د ښه راغلاست سکرین ====================
   if (showWelcome) {
@@ -432,7 +444,67 @@ export default function App() {
     );
   }
 
-  // ==================== مینو ۴: زما ====================
+  // ==================== مینو ۴: حامله ====================
+  if (activeMenu === 'pregnancy') {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="dark-content" />
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => setActiveMenu('home')} style={styles.headerBack}>
+            <Text style={styles.headerBackText}>←</Text>
+          </TouchableOpacity>
+          <Text style={styles.pageTitle}>🤰 حامله ښځو لپاره خطرناک</Text>
+        </View>
+        <Text style={styles.subtitle}>
+          هغه درمل چې حامله ښځو ته زیان رسوي
+        </Text>
+        <TextInput
+          style={styles.search}
+          placeholder="د درمل نوم ولیکه..."
+          placeholderTextColor={COLORS.textLight}
+          value={pregnancySearch}
+          onChangeText={setPregnancySearch}
+        />
+        {pregnancyResults.length === 0 ? (
+          <View style={styles.emptyBox}>
+            <Text style={styles.emptyIcon}>😔</Text>
+            <Text style={styles.emptyText}>دا درمل پیدا نشو</Text>
+            <Text style={styles.emptyHint}>بله لیکنه هڅه وکړه</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={pregnancyResults}
+            keyExtractor={(item) => item.id}
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item }) => {
+              const isHigh = item.severity.includes('🔴');
+              const isMed = item.severity.includes('🟠');
+              return (
+                <View style={[styles.interactionCard, isHigh ? styles.interactionHigh : isMed ? styles.interactionMed : styles.interactionLow]}>
+                  <View style={styles.interactionHeader}>
+                    <Text style={styles.interactionMeds}>{item.name}</Text>
+                    <Text style={styles.interactionSeverity}>{item.severity}</Text>
+                  </View>
+                  <Text style={styles.interactionEffect}>
+                    <Text style={styles.bold}>اغېزه: </Text>
+                    {item.effect}
+                  </Text>
+                  <View style={styles.adviceBox}>
+                    <Text style={styles.interactionAdvice}>
+                      <Text style={styles.bold}>✅ سلا: </Text>
+                      {item.advice}
+                    </Text>
+                  </View>
+                </View>
+              );
+            }}
+          />
+        )}
+      </SafeAreaView>
+    );
+  }
+
+  // ==================== مینو ۵: زما ====================
   if (activeMenu === 'about') {
     return (
       <SafeAreaView style={styles.container}>
@@ -517,7 +589,7 @@ export default function App() {
           <View style={styles.aboutDescriptionCard}>
             <Text style={styles.aboutLabel}>📝 د اپلیکیشن په اړه</Text>
             <Text style={styles.aboutDescription}>
-              دا اپلیکیشن د درملو د معلوماتو، د نښو لارښود، او د خطرناکو درملو د ترکیبونو د پوهیدو لپاره جوړ شوی دی.
+              دا اپلیکیشن د درملو د معلوماتو، د نښو لارښود، د خطرناکو درملو د ترکیبونو، او د حامله ښځو لپاره د خطرناکو درملو د پوهیدو لپاره جوړ شوی دی.
             </Text>
           </View>
         </ScrollView>
@@ -569,16 +641,29 @@ export default function App() {
             <Text style={styles.menuSubtext}>د نښو لارښود</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.menuCard, { backgroundColor: COLORS.secondary }]}
-            onPress={() => setActiveMenu('about')}
+            style={[styles.menuCard, { backgroundColor: COLORS.pregnancy }]}
+            onPress={() => setActiveMenu('pregnancy')}
           >
             <View style={styles.menuIconCircle}>
-              <Text style={styles.menuIcon}>👤</Text>
+              <Text style={styles.menuIcon}>🤰</Text>
             </View>
-            <Text style={styles.menuText}>زما</Text>
-            <Text style={styles.menuSubtext}>زما معلومات</Text>
+            <Text style={styles.menuText}>حامله</Text>
+            <Text style={styles.menuSubtext}>د خطرناکو درملو لیست</Text>
           </TouchableOpacity>
         </View>
+        <TouchableOpacity
+          style={[styles.fullWidthCard, { backgroundColor: COLORS.secondary }]}
+          onPress={() => setActiveMenu('about')}
+        >
+          <View style={styles.fullWidthIconCircle}>
+            <Text style={styles.menuIcon}>👤</Text>
+          </View>
+          <View style={styles.fullWidthTextContainer}>
+            <Text style={styles.fullWidthText}>زما</Text>
+            <Text style={styles.fullWidthSubtext}>زما معلومات</Text>
+          </View>
+          <Text style={styles.fullWidthArrow}>›</Text>
+        </TouchableOpacity>
       </View>
       <View style={styles.homeFooter}>
         <Text style={styles.footerText}>Version 6.0 • 2026</Text>
@@ -604,19 +689,25 @@ const styles = StyleSheet.create({
   homeLogoIcon: { fontSize: 40 },
   appTitle: { fontSize: 20, fontWeight: 'bold', textAlign: 'center', color: COLORS.primary },
   appSubtitle: { fontSize: 13, textAlign: 'center', color: COLORS.textLight, marginTop: 4 },
-  homeCenter: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  homeCenter: { flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', width: '100%' },
   menuCard: { width: '48%', aspectRatio: 1, borderRadius: 22, padding: 14, justifyContent: 'center', alignItems: 'center', marginBottom: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.2, shadowRadius: 10, elevation: 8 },
   menuIconCircle: { width: 64, height: 64, borderRadius: 32, backgroundColor: 'rgba(255,255,255,0.25)', justifyContent: 'center', alignItems: 'center', marginBottom: 10, borderWidth: 2, borderColor: 'rgba(255,255,255,0.4)' },
   menuIcon: { fontSize: 32 },
   menuText: { fontSize: 18, fontWeight: 'bold', color: 'white' },
   menuSubtext: { fontSize: 11, color: 'rgba(255,255,255,0.9)', marginTop: 4, textAlign: 'center' },
+  fullWidthCard: { width: '100%', borderRadius: 22, padding: 16, marginTop: 0, marginBottom: 16, flexDirection: 'row', alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.2, shadowRadius: 10, elevation: 8 },
+  fullWidthIconCircle: { width: 50, height: 50, borderRadius: 25, backgroundColor: 'rgba(255,255,255,0.25)', justifyContent: 'center', alignItems: 'center', marginRight: 14, borderWidth: 2, borderColor: 'rgba(255,255,255,0.4)' },
+  fullWidthTextContainer: { flex: 1 },
+  fullWidthText: { fontSize: 18, fontWeight: 'bold', color: 'white' },
+  fullWidthSubtext: { fontSize: 11, color: 'rgba(255,255,255,0.9)', marginTop: 2 },
+  fullWidthArrow: { fontSize: 30, color: 'white', marginLeft: 8 },
   homeFooter: { paddingVertical: 12, alignItems: 'center' },
   footerText: { fontSize: 12, color: COLORS.textLight, fontWeight: '500' },
   header: { flexDirection: 'row', alignItems: 'center', marginBottom: 12, marginTop: 12 },
   headerBack: { padding: 8, marginRight: 8 },
   headerBackText: { fontSize: 26, color: COLORS.primary, fontWeight: 'bold' },
-  pageTitle: { fontSize: 20, fontWeight: 'bold', color: COLORS.primary, flex: 1, textAlign: 'center', marginRight: 40 },
+  pageTitle: { fontSize: 18, fontWeight: 'bold', color: COLORS.primary, flex: 1, textAlign: 'center', marginRight: 40 },
   subtitle: { fontSize: 13, textAlign: 'center', color: COLORS.textLight, marginBottom: 12 },
   search: { backgroundColor: COLORS.card, borderRadius: 14, padding: 15, fontSize: 15, marginBottom: 14, borderWidth: 1, borderColor: COLORS.border, color: COLORS.text, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 2 },
   card: { backgroundColor: COLORS.card, borderRadius: 16, padding: 15, marginBottom: 10, borderWidth: 1, borderColor: COLORS.border, shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 3 },
