@@ -91,7 +91,6 @@ for (const medicine of allMedicines) {
 }
 
 const medicines = uniqueMedicines;
-}
 
 // ==================== وروستی پاک لیست ====================
 
